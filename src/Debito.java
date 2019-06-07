@@ -8,10 +8,10 @@ public class Debito implements Cuenta{
     private int numeroSucursal;
     private boolean estado;
     private String correo;
-    private int telefono;
+    private String telefono;
 
     public Debito(String nombre, int numeroCliente, int numeroCuenta, double saldo, 
-                  String fechaApertura, String fechaCorte,int numeroSucursal,String correo, int telefono) {
+                  String fechaApertura, String fechaCorte, boolean estado, int numeroSucursal,String correo, String telefono) {
         this.nombre = nombre;
         this.numeroCliente = numeroCliente;
         this.numeroCuenta = numeroCuenta;
@@ -19,7 +19,7 @@ public class Debito implements Cuenta{
         this.fechaApertura = fechaApertura;
         this.fechaCorte = fechaCorte;
         this.numeroSucursal = numeroSucursal;
-        this.estado = true;
+        this.estado = estado;
         this.correo = correo;
         this.telefono = telefono;
     }
@@ -28,7 +28,7 @@ public class Debito implements Cuenta{
 
     public String toString() {
         String cadena = "Tipo de cuenta: Debito\n";
-        cadena += String.format("Nombre:%s\nNumero de cliente: %d\nNumero de cuenta: %d\nSaldo: $%f\nFecha de apertura: %s\nFecha de corte: %s\nNumero de sucursal: %d\nCorreo electronico: %s\nNumero telefonico: %d", nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte, numeroSucursal, correo, telefono);
+        cadena += String.format("Nombre:%s\nNumero de cliente: %d\nNumero de cuenta: %d\nSaldo: $%f\nFecha de apertura: %s\nFecha de corte: %s\nNumero de sucursal: %d\nCorreo electronico: %s\nNumero telefonico: %s", nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte, numeroSucursal, correo, telefono);
         return cadena;
     }
 
@@ -63,7 +63,7 @@ public class Debito implements Cuenta{
     }
 
     @Override
-    public int getNumeroTelefono() {
+    public String getNumeroTelefono() {
         return this.telefono;
     }
 
@@ -88,7 +88,7 @@ public class Debito implements Cuenta{
     }
 
     @Override
-    public void setNumeroTelefono(int telefono) {
+    public void setNumeroTelefono(String telefono) {
         this.telefono = telefono;
     }
 
@@ -102,6 +102,81 @@ public class Debito implements Cuenta{
 
     @Override
     public String paraAlmacenar() {
-        return String.format("%s,%d,%d,%f,%s,%s,%d,%s,%d", nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte, numeroSucursal, correo, telefono);
+        String representacion; 
+        if (estado == true) {
+            representacion = "activo"; 
+        } else {
+            representacion =  "inactivo";
+        }                                                        
+        return String.format("debito,%s,%d,%d,%f,%s,%s,%s,%d,%s,%s", nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte, representacion, numeroSucursal, correo, telefono);
+    }
+
+    @Override
+    public int getNumeroCuenta() {
+        return this.numeroCuenta;
+    }
+
+    @Override
+    public int getNumeroCliente() {
+        return this.numeroCliente;
+    }
+
+    @Override
+    public String getClase() {
+        return "debito";
+    }
+
+    @Override
+    public String getRfcEmpresa() {
+        return null;
+    }
+
+    @Override
+    public void deposito(double deposito) {
+        this.saldo += deposito;
+    }
+
+    @Override
+    public boolean retiroValido(double retiro) {
+        if (retiro <= this.saldo) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void efectuaRetiro(double retiro) {
+        this.saldo -= retiro;
+    }
+
+    @Override
+    public void incrementaMontoRetirado(double retiro) {
+
+    }
+
+    @Override
+    public void pagoCredito(double pago) {
+
+    }
+
+    @Override
+    public double getSaldo() {
+        return this.saldo;
+    }
+
+    @Override
+    public double getImporte() {
+        return 0;
+    }
+
+    @Override
+    public String getFechaPago() {
+        return null;
+    }
+
+    @Override
+    public int getNumeroTarjeta() {
+        return 0;
     }
 }

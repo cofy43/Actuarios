@@ -1,6 +1,10 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.Random;
@@ -10,6 +14,7 @@ public class Sistema {
 
     LinkedList<Cuenta> cuentas = new LinkedList<>();
     LinkedList<Cuenta> ejecutivos = new LinkedList<>();
+    LinkedList<String> cuentasApertura = new LinkedList<>();
     static Scanner sc = new Scanner(System.in);
     Random rd = new Random();
     // Sujerir almacenar el numero de clientes y actualizarlo al leer los archivos
@@ -18,27 +23,350 @@ public class Sistema {
     Debito b = new Debito();
     Credito c = new Credito();
     Nomina n = new Nomina();
+    File client = new File("cuentas.txt");
+    File eje = new File("ejecutivos.txt");
+    FileOutputStream paraClientes;
+    FileOutputStream paraEjecutivos;
+    PrintStream writerClientes;
+    PrintStream writerEjecutivos;
 
-    public void creaCuenta() {
 
+    public Sistema() {
+        
+    }
+
+    public void inciaPrograma() {
+        try {
+            FileReader lecturaCuetas = new FileReader(client);
+            FileReader lecturaEjecutivos = new FileReader(eje);
+            BufferedReader lineasCuenta = new BufferedReader(new InputStreamReader(System.in));
+            BufferedReader lineasEjecutivo = new BufferedReader(new InputStreamReader(System.in));
+            String cuenta;
+            while ((cuenta = lineasCuenta.readLine()) != null) {
+                String[] datos = cuenta.split(",");
+                if (datos.length == 10) {
+                    String nombre = datos[0];
+                    int numeroCliente = Integer.parseInt(datos[1]);
+                    int numeroCuenta = Integer.parseInt(datos[2]);
+                    double saldo = Double.parseDouble(datos[3]);
+                    String fechaApertura = datos[4];
+                    String fechaCorte = datos[5];
+                    int numeroSucursal = Integer.parseInt(datos[7]);
+                    boolean estado;
+                    if (datos[6].equals("activo")) {
+                        estado = true;
+                    } else {
+                        estado = false;
+                    }
+                    String correo = datos[8];
+                    String telefono = datos[9];
+                    cuentas.add(new Debito(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte, estado, numeroSucursal, correo, telefono));
+                } else if (datos.length == 13) {
+                    if (datos[0].equals("credito")) {
+                        String nombre = datos[1];
+                        int numeroCliente = Integer.parseInt(datos[2]);
+                        int numeroTarjeta = Integer.parseInt(datos[3]);
+                        double importeCredito = Double.parseDouble(datos[4]);
+                        double montoCredito = Double.parseDouble(datos[5]);
+                        String fechaApertura = datos[6];
+                        String fechaPago = datos[7];
+                        String fechaVencimiento = datos[8];
+                        int numeroSucursal = Integer.parseInt(datos[9]);
+                        String correo = datos[10];
+                        String telefono = datos[11];
+                        boolean estado;
+                        if (datos[12].equals("activo")) {
+                            estado = true;
+                        } else {
+                            estado = false;
+                        }
+                        cuentas.add(new Credito(nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito, fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono, estado));
+                    } else {
+                        String nombre = datos[1];
+                        int numeroCliente = Integer.parseInt(datos[2]);
+                        int numeroCuenta = Integer.parseInt(datos[3]);
+                        double saldo = Double.parseDouble(datos[4]);
+                        String fechaApertura = datos[5];
+                        int numeroSucursal = Integer.parseInt(datos[6]);
+                        String correo = datos[7];
+                        String telefono = datos[8];
+                        String rfc = datos[9];
+                        String nombreEmpresa = datos[10];
+                        String fechaDeposito = datos[11];
+                        boolean estado;
+                        if (datos[12].equals("activo")) {
+                            estado = true;
+                        } else {
+                            estado = false;
+                        }
+                        cuentas.add(new Nomina(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, numeroSucursal, correo, telefono, rfc, nombreEmpresa, fechaDeposito, estado));
+                    }
+                }
+            }
+            String ejecutivo;
+            while ((ejecutivo = lineasEjecutivo.readLine()) != null) {
+                String[] datos = ejecutivo.split(",");
+                if (datos.length == 10) {
+                    String nombre = datos[0];
+                    int numeroCliente = Integer.parseInt(datos[1]);
+                    int numeroCuenta = Integer.parseInt(datos[2]);
+                    double saldo = Double.parseDouble(datos[3]);
+                    String fechaApertura = datos[4];
+                    String fechaCorte = datos[5];
+                    int numeroSucursal = Integer.parseInt(datos[7]);
+                    boolean estado;
+                    if (datos[6].equals("activo")) {
+                        estado = true;
+                    } else {
+                        estado = false;
+                    }
+                    String correo = datos[8];
+                    String telefono = datos[9];
+                    ejecutivos.add(new Debito(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte, estado, numeroSucursal, correo, telefono));
+                } else if (datos.length == 13) {
+                    if (datos[0].equals("credito")) {
+                        String nombre = datos[1];
+                        int numeroCliente = Integer.parseInt(datos[2]);
+                        int numeroTarjeta = Integer.parseInt(datos[3]);
+                        double importeCredito = Double.parseDouble(datos[4]);
+                        double montoCredito = Double.parseDouble(datos[5]);
+                        String fechaApertura = datos[6];
+                        String fechaPago = datos[7];
+                        String fechaVencimiento = datos[8];
+                        int numeroSucursal = Integer.parseInt(datos[9]);
+                        String correo = datos[10];
+                        String telefono = datos[11];
+                        boolean estado;
+                        if (datos[12].equals("activo")) {
+                            estado = true;
+                        } else {
+                            estado = false;
+                        }
+                        ejecutivos.add(new Credito(nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito, fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono, estado));
+                    } else {
+                        String nombre = datos[1];
+                        int numeroCliente = Integer.parseInt(datos[2]);
+                        int numeroCuenta = Integer.parseInt(datos[3]);
+                        double saldo = Double.parseDouble(datos[4]);
+                        String fechaApertura = datos[5];
+                        int numeroSucursal = Integer.parseInt(datos[6]);
+                        String correo = datos[7];
+                        String telefono = datos[8];
+                        String rfc = datos[9];
+                        String nombreEmpresa = datos[10];
+                        String fechaDeposito = datos[11];
+                        boolean estado;
+                        if (datos[12].equals("activo")) {
+                            estado = true;
+                        } else {
+                            estado = false;
+                        }
+                        ejecutivos.add(new Nomina(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, numeroSucursal, correo, telefono, rfc, nombreEmpresa, fechaDeposito, estado));
+                    }
+                }
+            }
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            System.out.println("No se encontraron los archivos");
+        } catch (NumberFormatException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public double getSaldoPromedio() {
+        double total = 0;
+        double suma = 0;
+        for (Cuenta c : cuentas) {
+            if (!c.getClase().equals("credito")) {
+                total ++;
+                suma += c.getSaldo();
+            }
+        }
+        return suma / total;
+    }
+
+    public String generaContrato(int numeroEmpleado, Cuenta c) {
+        String contrato = "\t\tInstitucion bancaria\n--------------------------------------------------------------------------------";
+        if (c.getClase().equals("credito")) {
+            contrato += String.format("Numero de empleado que realiza el contrato: %d\nNumero de sucursal: %d\nFecha: %s\nYo : %s acepto la creacion de la cuenta de %s con numero de cliente %d\nCuenta cuyo importe de credito sera de: %f\nCuyos pagos seran: %s\nCon numero de tarjeta %d\nCorreo electronico: %s\nNumero telefonico: %s", numeroEmpleado, c.getNueroSucursal(), c.getFechaApertura(), c.getNombreCliente(), c.getClase(), c.getNumeroCliente(), c.getImporte(), c.getFechaPago(), c.getNumeroTarjeta(), c.getCorreroElectronico(), c.getNumeroTelefono());
+        } else if (c.getClase().equals("debito")) {
+            contrato += String.format("Numero de empleado que realiza el contrato: %d\nNumero de sucursal: %d\nFecha: %s\nYo : %s acepto la creacion de la cuenta de %s con numero de cliente %d\nCreo la cuenta con un monto de %f\nCorreo electronico: %s\nNumero telefonico: %s", numeroEmpleado, c.getNueroSucursal(), c.getFechaApertura(),c.getNombreCliente(), c.getClase(),c.getNumeroCliente(), c.getSaldo(), c.getCorreroElectronico(), c.getNumeroTelefono());
+        } else {
+            contrato += String.format("Numero de empleado que realiza el contrato: %d\nNumero de sucursal: %d\nFecha: %s\nYo : %s acepto la creacion de la cuenta de %s con numero de cliente %d\nCorreo electronico: %s\nNumero telefonico: %s", numeroEmpleado, c.getNueroSucursal(),c.getFechaApertura(),c.getNombreCliente(),c.getClase(), c.getNumeroCliente(), c.getCorreroElectronico(), c.getNumeroTelefono());
+        }
+        return "--------------------------------------------------------------------------------\n" + contrato + "\n";
+    }
+
+    public double getCreditoPromedio() {
+        double total = 0;
+        double suma = 0;
+        for (Cuenta c : cuentas) {
+            if (c.getClase().equals("credito")) {
+                total ++;
+                suma += c.getImporte();
+            }
+        }
+        return suma / total;
+    }
+
+    public double getSaldoMenor() {
+        double min = Double.MAX_VALUE;
+        for (Cuenta c : cuentas) {
+            if (!c.getClase().equals("credito")) {
+                if (c.getSaldo() < min) {
+                    min = c.getSaldo();
+                }
+            }
+        }
+        return min;
+    }
+
+    public double getDeudaMenor() {
+        double min = Double.MAX_VALUE;
+        for (Cuenta c : cuentas) {
+            if (c.getClase().equals("credito")) {
+                if (c.getSaldo() < min) {
+                    min = c.getSaldo();
+                }
+            }
+        }
+        return min;
+    }
+
+    public double getSaldoMayor() {
+        double max = 0;
+        for (Cuenta c : cuentas) {
+            if (!c.getClase().equals("credito")) {
+                if (c.getSaldo() > max) {
+                    max = c.getSaldo();
+                }
+            }
+        }
+        return max;
+    }
+
+    public double getDeudaMayor() {
+        double max = 0;
+        for (Cuenta c : cuentas) {
+            if (c.getClase().equals("credito")) {
+                if (c.getSaldo() > max) {
+                    max = c.getSaldo();
+                }
+            }
+        }
+        return max;
+    }
+
+    public int getDebito() {
+        int total = 0;
+        for (Cuenta c : cuentas) {
+            if (c.getClase().equals("debito")) {
+                total ++;
+            }
+        }
+        return total;
+    }
+
+    public int getNomina() {
+        int total = 0;
+        for (Cuenta c : cuentas) {
+            if (c.getClase().equals("nomina")) {
+                total ++;
+            }
+        }
+        return total;
+    }
+
+    public int getCredito() {
+        int total = 0;
+        for (Cuenta c : cuentas) {
+            if (c.getClase().equals("credito")) {
+                total ++;
+            }
+        }
+        return total;
+    }
+
+    public void generaReporteDiario() {
+        double saldoPromedio = getSaldoPromedio();
+        double creditoPromedio = getCreditoPromedio();
+        double saldoMenor = getSaldoMenor();
+        double deudaMenor = getDeudaMenor();
+        double saldoMayor = getSaldoMayor();
+        double deudaMayor = getDeudaMayor();
+        int cuentasDebito = getDebito();
+        int cuentasCredito = getCredito();
+        int cuentasNomina = getNomina();
+        String reporte = String.format("Saldo promedio: %f\nCredito promedo: %f\nSaldo menor: %f\n Deudo menor: %f\n Saldo mayor: %f\n Deuda mayor: %f\nNumero de cuentas de debito: %d\n NUmero de cuentas de credito: %d\n Numero de cuentas de nommina: %d", saldoPromedio, creditoPromedio, saldoMenor, deudaMenor, saldoMayor, deudaMayor, cuentasDebito, cuentasCredito, cuentasNomina);
+        System.out.println(reporte);
+    }
+
+    public LinkedList<Cuenta> busquedaPorEstado(String dato) {
+        LinkedList<Cuenta> estados = new LinkedList<>();
+        boolean estado;
+        if (dato.equals("activo")) {
+            estado = true;
+        } else {
+            estado = false;
+        }
+        for (Cuenta c : this.cuentas) {
+            if (c.getEstadoCuenta() == estado) {
+                estados.add(c);
+            }
+        }
+
+        for (Cuenta c : this.ejecutivos) {
+            if (c.getEstadoCuenta() == estado) {
+                estados.add(c);
+            }
+        }
+        return estados;
     }
 
     public Cuenta consulta(String dato, int id) {
         switch (id) {
-        // Busqueda por tipo de cuenta.
+        // Busqueda por nombre del cliente.    
         case 1:
-            break;
-        // Busqueda por nombre del cliente.
-        case 2:
+            for (Cuenta c : this.cuentas) {
+                if (c.getNombreCliente().equals(dato)) {
+                    return c;
+                }
+            }
+            for (Cuenta c : this.ejecutivos) {
+                if (c.getNombreCliente().equals(dato)) {
+                    return c;
+                }
+            }
             break;
         // Busqueda por RFC ejecutivo.
-        case 3:
+        case 2:
+            for (Cuenta c : this.cuentas) {
+                if (c.getRfcEmpresa().equals(dato)) {
+                    return c;
+                }
+            }
+            for (Cuenta c : this.ejecutivos) {
+                if (c.getRfcEmpresa().equals(dato)) {
+                    return c;
+                }
+            }
             break;
         // Busqueda por RFC de la empresa.
-        case 4:
-            break;
-        // Busqueda por estado
-        default:
+        case 3:
+            for (Cuenta c : this.cuentas) {
+                if (c.getRfcEmpresa().equals(dato)) {
+                    return c;
+                }
+            }
+            for (Cuenta c : this.ejecutivos) {
+                if (c.getRfcEmpresa().equals(dato)) {
+                    return c;
+                }
+            }
             break;
         }
         return null;
@@ -48,12 +376,42 @@ public class Sistema {
         switch (id) {
         // Busqueda por numero de cliente.
         case 1:
-            break;
+            for (Cuenta c : this.cuentas) {
+                if (c.getNumeroCliente() == dato) {
+                    return c;
+                }
+            }
+            for (Cuenta c : this.ejecutivos) {
+                if (c.getNumeroCliente() == dato) {
+                    return c;
+                }
+            }
+        break;
         // Busqueda por numero de cuenta.
         case 2:
+            for (Cuenta c : this.cuentas) {
+                if (c.getNumeroCuenta() == dato) {
+                    return c;
+                }
+            }
+            for (Cuenta c : this.ejecutivos) {
+                if (c.getNumeroCuenta() == dato) {
+                    return c;
+                }
+            }
             break;
         // Busqueda por numero de sucursal.
         case 3:
+            for (Cuenta c : this.cuentas) {
+                if (c.getNueroSucursal() == dato) {
+                    return c;
+                }
+            }
+            for (Cuenta c : this.ejecutivos) {
+                if (c.getNueroSucursal() == dato) {
+                    return c;
+                }
+            }
             break;
         }
         return null;
@@ -154,7 +512,7 @@ public class Sistema {
             break;
         default:
             System.out.println("Introduza el nuevo numero telefonico");
-            int telefono = sc.nextInt();
+            String telefono = sc.nextLine();
             c.setNumeroTelefono(telefono);
             break;
         }
@@ -225,7 +583,7 @@ public class Sistema {
             break;
         default:
             System.out.println("Introduza el nuevo numero telefonico");
-            int telefono = sc.nextInt();
+            String telefono = sc.nextLine();
             c.setNumeroTelefono(telefono);
             break;
 
@@ -263,7 +621,7 @@ public class Sistema {
             break;
         case 4:
             System.out.println("Introduza el nuevo numero telefonico");
-            int telefono = sc.nextInt();
+            String telefono = sc.nextLine();
             c.setNumeroTelefono(telefono);
             break;
         case 5:
@@ -365,7 +723,18 @@ public class Sistema {
 
     }
 
-    public Cuenta subMenuConsulta(int subOpcion) {
+    public LinkedList<Cuenta> busquedaPortTipo(String tipo) {
+        LinkedList<Cuenta> tipos = new LinkedList<>();
+        for (Cuenta c : this.cuentas) {
+            if (c.getClase().equals(tipo)) {
+                tipos.add(c);
+            }
+        }
+        return tipos;
+    }
+
+    public LinkedList<Cuenta> subMenuConsulta(int subOpcion) {
+        LinkedList<Cuenta> cc = new LinkedList<>();
         Cuenta c;
         int dato;
         String info;
@@ -375,7 +744,8 @@ public class Sistema {
             System.out.println("Por favor introduzca el numero del cliente");
             dato = sc.nextInt();
             c = consulta(dato, 1);
-            return c;
+            cc.add(c);
+            return cc;
         case 2:
             System.out.println("Por favor introduzca el tipo de cuenta");
             info = sc.nextLine();
@@ -385,45 +755,52 @@ public class Sistema {
                 System.out.println("Cuenta invalida, intente nuevamente");
                 info = sc.nextLine();
             }
-            c = consulta(info, 1);
-            return c;
+            //aqui
+            //c = consulta(info, 1);
+            cc = busquedaPortTipo(info);
+            return cc;
         case 3:
             System.out.println("Por favor introduzca el tipo de cuenta");
             info = sc.nextLine();
             // Falta volcer minusculas y quitar acentos.
             c = consulta(info, 2);
-            return c;
+            cc.add(c);
+            return cc;
         case 4:
             System.out.println("Por favor introduzca el numero de cuenta");
             dato = sc.nextInt();
             c = consulta(dato, 2);
-            return c;
+            cc.add(c);
+            return cc;
         case 5:
             System.out.println("Por favor introduzca numero de sucursal");
             dato = sc.nextInt();
             // Falta volcer minusculas y quitar acentos.
             c = consulta(dato, 3);
-            return c;
+            cc.add(c);
+            return cc;
         case 6:
             System.out.println("Por favor introduzca el RFC del ejecutivo");
             info = sc.nextLine();
             // Falta volcer minusculas y quitar acentos.
             c = consulta(info, 3);
-            return c;
+            cc.add(c);
+            return cc;
         case 7:
             System.out.println("Por favor introduzca el RFC de la empresa");
             info = sc.nextLine();
             // Falta volcer minusculas y quitar acentos.
             c = consulta(info, 4);
-            return c;
+            cc.add(c);
+            return cc;
         default:
             System.out.println("Por favor introduzca el estado a buscar");
             // Encontrar un sinonimo para pasivo.
-            System.out.println("Activo o ");
+            System.out.println("Activo o Inactivo");
             info = sc.nextLine();
             // Falta volcer minusculas y quitar acentos.
-            c = consulta(info, 5);
-            return c;
+            //c = consulta(info, 5);
+            return busquedaPortTipo(info);
         }
     }
 
@@ -436,9 +813,10 @@ public class Sistema {
     }
 
     public void nuevaDebito(boolean esEjecutivo) {
-        int numeroSucursal = rd.nextInt(6) + 1;
+        System.out.println("Introduce tu numero de trabajador");
+        int numeroTrabajador = sc.nextInt();
         System.out.println("Por favor introduzca un nombre");
-        String nombre = sc.nextLine();
+        String nombreDebito = sc.next();
         System.out.println("Por favor introduzca un numero de cuenta");
         int numeroCuenta = sc.nextInt();
         System.out.println("Por favor introduzca el saldo incial");
@@ -448,27 +826,33 @@ public class Sistema {
         System.out.println("Con el siguiente formato:");
         System.out.println("dia mes ultimos dos digitos del año separados por un punto");
         System.out.println("Ejemplo 12.03.99");
-        String fechaApertura = sc.nextLine();
+        String fechaApertura = sc.next();
         System.out.println("Por favor introduzca la fecha de corte");
-        String fechaCorte = sc.nextLine();
+        String fechaCorte = sc.next();
         System.out.println("Por favor introduzca un correo electronico");
-        String correo = sc.nextLine();
+        String correo = sc.next();
         System.out.println("Por favor introduzca un numero de telefono");
-        int telefono = sc.nextInt();
+        String telefono = sc.next();
+        int numeroSucursal = rd.nextInt(6) + 1;
+        Debito nuevaDebito = new Debito(nombreDebito, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte, true,
+        numeroSucursal, correo, telefono);
         if (esEjecutivo) {
-            this.ejecutivos.add(new Debito(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte,
-                    numeroSucursal, correo, telefono));
+            this.ejecutivos.add(nuevaDebito);
         } else {
-            this.cuentas.add(new Debito(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte,
-                    numeroSucursal, correo, telefono));
+            this.cuentas.add(nuevaDebito);
         }
         numeroCliente++;
+        String contrato = generaContrato(numeroTrabajador, nuevaDebito);
+        System.out.println(contrato);
+        cuentasApertura.add(contrato);
     }
 
     public void nuevaCredito(boolean esEjecutivo) {
+        System.out.println("Introduce tu numero de trabajador");
+        int numeroTrabajador = sc.nextInt();
         int numeroSucursal = rd.nextInt(6) + 1;
         System.out.println("Por favor introduzca un nombre");
-        String nombre = sc.nextLine();
+        String nombre = sc.next();
         System.out.println("Por favor introduzca el importe de credito");
         int importeCredito = sc.nextInt();
         System.out.println("Por favor introduzca el monto de credito utilizado");
@@ -480,34 +864,44 @@ public class Sistema {
         System.out.println("Con el siguiente formato:");
         System.out.println("dia mes ultimos dos digitos del año separados por un punto");
         System.out.println("Ejemplo 12.03.99");
-        String fechaApertura = sc.nextLine();
+        String fechaApertura = sc.next();
         System.out.println("Por favor introduzca la fecha de pago");
         System.out.println("Indicando unicamente el dia");
-        String fechaPago = sc.nextLine();
+        String fechaPago = sc.next();
         System.out.println("Por favor introduzca la fecha del dia");
         System.out.println("Con el siguiente formato:");
         System.out.println("dia mes ultimos dos digitos del año separados por un punto");
         System.out.println("Ejemplo 12.03.99");
-        String fechaVencimiento = sc.nextLine();
+        String fechaVencimiento = sc.next();
         System.out.println("Por favor introduzca un correo electronico");
-        String correo = sc.nextLine();
+        String correo = sc.next();
         System.out.println("Por favor introduzca un numero de telefono");
-        int telefono = sc.nextInt();
+        String telefono = sc.next();
+        Credito nuevaCredito = new Credito(nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito,
+        fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono, true);
         if (esEjecutivo) {
-            this.ejecutivos.add(new Credito(nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito,
-                    fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono));
+            this.ejecutivos.add(nuevaCredito);
         } else {
-            this.cuentas.add(new Credito(nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito,
-                    fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono));
+            this.cuentas.add(nuevaCredito);
         }
         numeroCliente++;
         numeroTarjeta++;
+        String contrato = generaContrato(numeroTrabajador, nuevaCredito);
+        System.out.println(contrato);
+        cuentasApertura.add(contrato);
     }
 
     public void nuevaNomina(boolean esEjecutivo) {
+        System.out.println("Introduce tu numero de trabajador");
+        int numeroTrabajador = sc.nextInt();
         int numeroSucursal = rd.nextInt(6) + 1;
         System.out.println("Por favor introduzca un nombre");
-        String nombre = sc.nextLine();
+        String nombre = sc.next();
+        if (nombre.equals("")) {
+            System.out.println("NO toma nombres");
+        } else {
+            System.out.println("Algo raro pasa");
+        }
         System.out.println("Por favor introduzca el numero de cuenta");
         int numeroCuenta = sc.nextInt();
         System.out.println("Por favor introduzca el saldo incial");
@@ -517,25 +911,28 @@ public class Sistema {
         System.out.println("Con el siguiente formato:");
         System.out.println("dia mes ultimos dos digitos del año separados por un punto");
         System.out.println("Ejemplo 12.03.99");
-        String fechaApertura = sc.nextLine();
+        String fechaApertura = sc.next();
         System.out.println("Por favor introduzca un correo electronico");
-        String correo = sc.nextLine();
+        String correo = sc.next();
         System.out.println("Por favor introduzca un numero de telefono");
-        int telefono = sc.nextInt();
+        String telefono = sc.next();
         System.out.println("Por favor introduzca el RFC de la empresa");
-        String rfc = sc.nextLine();
+        String rfc = sc.next();
         System.out.println("Por favor introduzca el nombre de la empresa");
-        String nombreEmpresa = sc.nextLine();
+        String nombreEmpresa = sc.next();
         System.out.println("Por favor introduzca la fecha de deposito por parte de la empresa");
-        String fechaDeposito = sc.nextLine();
+        String fechaDeposito = sc.next();
+        Nomina nuevaNomina = new Nomina(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, numeroSucursal,
+        correo, telefono, rfc, nombreEmpresa, fechaDeposito, true);
         if (esEjecutivo) {
-            this.ejecutivos.add(new Nomina(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, numeroSucursal,
-                    correo, telefono, rfc, nombreEmpresa, fechaDeposito));
+            this.ejecutivos.add(nuevaNomina);
         } else {
-            this.cuentas.add(new Nomina(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, numeroSucursal,
-                    correo, telefono, rfc, nombreEmpresa, fechaDeposito));
+            this.cuentas.add(nuevaNomina);
         }
         numeroCliente++;
+        String contrato = generaContrato(numeroTrabajador, nuevaNomina);
+        System.out.println(contrato);
+        cuentasApertura.add(contrato);
     }
 
     public void muestraListas() {
@@ -550,7 +947,9 @@ public class Sistema {
         boolean ejecucionPrograma = true;
         int opcionEjecutivo;
         boolean esEjecutivo;
-        Cuenta c;
+        LinkedList<Cuenta> c;
+        Cuenta aux;
+        si.inciaPrograma();
         while (ejecucionPrograma) {
             si.muestraListas();
             si.menu();
@@ -568,14 +967,13 @@ public class Sistema {
                     subOpcion = sc.nextInt();
                 }
                 c = si.subMenuConsulta(subOpcion);
-                if (c == null) {
+                if (c.size() == 0) {
                     System.out.println("Cuenta no existente");
                 } else {
                     System.out.println(c.toString());
                 }
                 break;
             case 2:
-                opcionEjecutivo = sc.nextInt();
                 System.out.println("Indique si la cuenta nueva corresponde a un ejecutivo");
                 System.out.println("1) Si");
                 System.out.println("2) No");
@@ -617,48 +1015,75 @@ public class Sistema {
                 } else {
                     esEjecutivo = false;
                 }
-                System.out.println("Indique el tipo de cuenta que desea agregar");
-                System.out.println("1) Debito");
-                System.out.println("2) Credito");
-                System.out.println("3) Nomina");
-                int tipoCuenta = sc.nextInt();
-                while (tipoCuenta < 1 || tipoCuenta > 3) {
-                    System.out.println("Opcion incorrecta, intentelo nuevamente");
-                    tipoCuenta = sc.nextInt();
-                }
-                if (tipoCuenta == 1) {
-                    si.nuevaDebito(esEjecutivo);
-                } else if (tipoCuenta == 2) {
-                    si.nuevaCredito(esEjecutivo);
+                c = si.subMenuConsulta(2);
+                if (c == null) {
+                    System.out.println("No se encontro la cuenta");
                 } else {
-                    si.nuevaNomina(esEjecutivo);
+                    aux = c.getFirst();
+                    si.menuActualizacionDatos(aux);
                 }
                 break;
+            //Deposito
             case 4:
+                c = si.subMenuConsulta(1);
+                aux = c.getFirst();
+                if (aux.getClase().equals("credito")) {
+                    System.out.println("No se puede realizar la transaccion");
+                    break;
+                } else if (aux.getClase().equals("debito")) {
+                    double deposito = sc.nextDouble();
+                    aux.deposito(deposito);
+                    System.out.println("Ingrese el nombre de referencia de la persona que deposita");
+                    String nombreReferencia = sc.nextLine();
+                    break;
+                } else {
+                    double deposito = sc.nextDouble();
+                    aux.deposito(deposito);
+                }
                 break;
+            //retiro
             case 5:
+                c = si.subMenuConsulta(1);
+                aux = c.getFirst();
+                System.out.println("Ingrese la cantidad a retirar");
+                double retiro = sc.nextDouble();
+                boolean retiroValido = aux.retiroValido(retiro);
+                if (retiroValido) {
+                    aux.efectuaRetiro(retiro);
+                    if (aux.getClase().equals("credito")) {
+                        aux.incrementaMontoRetirado(retiro);
+                    }
+                } else {
+                    System.out.println("Fondos insuficientes");
+                }
                 break;
+            //pago de tarjeta
             case 6:
+                c = si.subMenuConsulta(1);
+                aux = c.getFirst();
+                if (!aux.getClase().equals("credito")) {
+                    System.out.println("Solo se puede realizar el pago de tarjetas a cuentas de credito");
+                    break;
+                } else {
+                    System.out.println("Ingrese la cantidad de pago");
+                    double pago = sc.nextDouble();
+
+                }
                 break;
             default:
+                si.generaReporteDiario();
                 si.cierraPrograma();
                 ejecucionPrograma = false;
                 break;
-            }
+            } 
         }
 
     }
 
     public void cierraPrograma() {
-        File c = new File("cuentas.txt");
-        File e = new File("ejecutivos.txt");
-        FileOutputStream paraClientes;
-        FileOutputStream paraEjecutivos;
-        PrintStream writerClientes;
-        PrintStream writerEjecutivos;
         try {
-            paraClientes = new FileOutputStream(c);
-            paraEjecutivos = new FileOutputStream(e);
+            paraClientes = new FileOutputStream(client);
+            paraEjecutivos = new FileOutputStream(eje);
             writerClientes = new PrintStream(paraClientes);
             writerEjecutivos = new PrintStream(paraEjecutivos);
             String linea;

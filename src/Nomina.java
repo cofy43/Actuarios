@@ -5,16 +5,16 @@ public class Nomina implements Cuenta{
     private double saldo;
     private String fechaApertura;
     private int numeroSucursal;
+    private boolean estado;
     private String correo;
-    private int telefono;
+    private String telefono;
     private String rfc;
     private String nombreEmpresa;
     private String fechaDeposito;
-    private boolean estado;
 
     public Nomina(String nombre, int numeroCliente, int numeroCuenta, double saldo, 
-                  String fechaApertura, int numeroSucursal, String correo, int telefono,
-                  String rfc, String nombreEmpresa, String fechaDeposito) {
+                  String fechaApertura, int numeroSucursal, String correo, String telefono,
+                  String rfc, String nombreEmpresa, String fechaDeposito, boolean estado) {
         this.nombre = nombre;
         this.numeroCliente = numeroCliente;
         this.numeroCuenta = numeroCuenta;
@@ -24,14 +24,14 @@ public class Nomina implements Cuenta{
         this.correo = correo;
         this.telefono = telefono;
         this.rfc = rfc;
-        this.estado = true;
+        this.estado = estado;
     }
 
     public Nomina() {}
 
     public String toString() {
         String cadena = "Tipo de cuenta: Nomina\n";
-        cadena += String.format("Nombre: %s\nNumero de cliente: %d\nNumero de cuenta: %d\nSaldo: %f\nFecha de apertura: %s\nNumero de sucursal: %d\nCorreo electronico: %s\nNumero telefonico: %d\nRFC de la empresa: %s\nNombre de la empresa: %s\nFecha de deposito: %s", nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, numeroSucursal, correo, telefono, rfc, nombreEmpresa, fechaDeposito);
+        cadena += String.format("Nombre: %s\nNumero de cliente: %d\nNumero de cuenta: %d\nSaldo: %f\nFecha de apertura: %s\nNumero de sucursal: %d\nCorreo electronico: %s\nNumero telefonico: %s\nRFC de la empresa: %s\nNombre de la empresa: %s\nFecha de deposito: %s", nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, numeroSucursal, correo, telefono, rfc, nombreEmpresa, fechaDeposito);
         return cadena;
     }
 
@@ -66,7 +66,7 @@ public class Nomina implements Cuenta{
     }
 
     @Override
-    public int getNumeroTelefono() {
+    public String getNumeroTelefono() {
         return this.telefono;
     }
 
@@ -91,7 +91,7 @@ public class Nomina implements Cuenta{
     }
 
     @Override
-    public void setNumeroTelefono(int telefono) {
+    public void setNumeroTelefono(String telefono) {
         this.telefono = telefono;
     }
 
@@ -113,6 +113,81 @@ public class Nomina implements Cuenta{
 
     @Override
     public String paraAlmacenar() {
-        return String.format("%s,%d,%d,%f,%s,%d,%s,%d,%s,%s,%s", nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, numeroSucursal, correo, telefono, rfc, nombreEmpresa, fechaDeposito);
+        String representacion; 
+        if (estado == true) {
+            representacion = "activo"; 
+        } else {
+            representacion =  "inactivo";
+        }                                                                 //  1        2             3            4      5               6                7     8       9     10              11              12                                     
+        return String.format("nomina,%s,%d,%d,%f,%s,%d,%s,%s,%s,%s,%s,%s", nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, numeroSucursal, correo, telefono, rfc, nombreEmpresa, fechaDeposito, representacion);
+    }
+
+    @Override
+    public int getNumeroCuenta() {
+        return this.numeroCuenta;
+    }
+
+    @Override
+    public int getNumeroCliente() {
+        return this.numeroCliente;
+    }
+
+    @Override
+    public String getClase() {
+        return "nomina";
+    }
+
+    @Override
+    public String getRfcEmpresa() {
+        return this.rfc;
+    }
+
+    @Override
+    public void deposito(double deposito) {
+        this.saldo += deposito;
+    }
+
+    @Override
+    public boolean retiroValido(double retiro) {
+        if (retiro <= this.saldo) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void efectuaRetiro(double retiro) {
+        this.saldo -= retiro;
+    }
+
+    @Override
+    public void incrementaMontoRetirado(double retiro) {
+
+    }
+
+    @Override
+    public void pagoCredito(double pago) {
+
+    }
+
+    @Override
+    public double getSaldo() {
+        return this.saldo;
+    }
+
+    @Override
+    public double getImporte() {
+        return 0;
+    }
+
+    @Override
+    public String getFechaPago() {
+        return fechaDeposito;
+    }
+
+    @Override
+    public int getNumeroTarjeta() {
+        return 0;
     }
 }

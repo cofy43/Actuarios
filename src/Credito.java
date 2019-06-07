@@ -10,11 +10,11 @@ public class Credito implements Cuenta{
     private int numeroSucursal;
     private boolean estado;
     private String correo;
-    private int telefono;
+    private String telefono;
 
     public Credito (String nombre, int numeroCliente, int numeroTarjeta, double importeCredito, 
                   double montoCredito, String fechaApertura, String fechaPago, String fechaVencimiento,
-                  int numeroSucursal,String correo, int telefono) {
+                  int numeroSucursal,String correo, String telefono, boolean estado) {
         this.nombre = nombre;
         this.numeroCliente = numeroCliente;
         this.numeroTarjeta = numeroTarjeta;
@@ -24,7 +24,7 @@ public class Credito implements Cuenta{
         this.fechaPago = fechaPago;
         this.fechaVencimiento = fechaVencimiento;
         this.numeroSucursal = numeroSucursal;
-        this.estado = true;
+        this.estado = estado;
         this.correo = correo;
         this.telefono = telefono;
     }
@@ -34,7 +34,7 @@ public class Credito implements Cuenta{
 
     public String toString() {
         String cadena = "Tipo de cuenta: Credito\n";
-        cadena += String.format("Nombre: %f\nNumero de cliente:%d\nNumero de tarjeta:%4d\nImporte de credito: %f\nMonto de credito:%f\nFecha de apertura: %s\nFecha de pago: %s\nFecha de vencimineto:%s\nNumero de sucursal: %d\nCorreo electronico: %s\nNumero telefonico: %d", nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito, fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono);
+        cadena += String.format("Nombre: %s\nNumero de cliente:%d\nNumero de tarjeta:%4d\nImporte de credito: %f\nMonto de credito:%f\nFecha de apertura: %s\nFecha de pago: %s\nFecha de vencimineto:%s\nNumero de sucursal: %d\nCorreo electronico: %s\nNumero telefonico: %s", nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito, fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono);
         return cadena;
     }
 
@@ -69,7 +69,7 @@ public class Credito implements Cuenta{
     }
 
     @Override
-    public int getNumeroTelefono() {
+    public String getNumeroTelefono() {
         return this.telefono;
     }
 
@@ -94,7 +94,7 @@ public class Credito implements Cuenta{
     }
 
     @Override
-    public void setNumeroTelefono(int telefono) {
+    public void setNumeroTelefono(String telefono) {
         this.telefono = telefono;
     }
 
@@ -116,6 +116,88 @@ public class Credito implements Cuenta{
 
     @Override
     public String paraAlmacenar() {
-        return String.format("%f,%d,%4d,%f,%f,%s,%s,%s,%d,%s,%d", nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito, fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono);
+        String representacion; 
+        if (estado == true) {
+            representacion = "activo"; 
+        } else {
+            representacion =  "inactivo";
+        }                                                           // 1         2              3               4             5              6               7           8              9              10       11       12
+        return String.format("credito,%s,%d,%4d,%f,%f,%s,%s,%s,%d,%s,%s", nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito, fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono, representacion);
+    }
+
+    @Override
+    public int getNumeroCuenta() {
+        return 0;
+    }
+
+    @Override
+    public int getNumeroCliente() {
+        return numeroCliente;
+    }
+
+    @Override
+    public String getClase() {
+        return "credito";
+    }
+
+    @Override
+    public String getRfcEmpresa() {
+        return null;
+    }
+
+    @Override
+    public boolean retiroValido(double retiro) {
+        if (retiro <= this.importeCredito) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void efectuaRetiro(double retiro) {
+        this.importeCredito -= retiro;
+    }
+
+    @Override
+    public void incrementaMontoRetirado(double retiro) {
+        double porcentaje = (retiro*0.05);
+        this.montoCredito += porcentaje;
+    }
+
+    @Override
+    public void deposito(double deposito) {
+
+    }
+
+    @Override
+    public void pagoCredito(double pago) {
+        if (pago == importeCredito) {
+            importeCredito = pago;
+        } else {
+            double diferencia = (importeCredito - pago)*0.08;
+            this.importeCredito -= pago;
+            importeCredito += diferencia;
+        }
+    }
+
+    @Override
+    public double getSaldo() {
+        return 0;
+    }
+
+    @Override
+    public double getImporte() {
+        return this.importeCredito;
+    }
+
+    @Override
+    public String getFechaPago() {
+        return this.fechaPago;
+    }
+
+    @Override
+    public int getNumeroTarjeta() {
+        return this.numeroTarjeta;
     }
 }
