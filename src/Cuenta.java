@@ -1,4 +1,12 @@
+/**
+ * Clase padre encargada de modelar una cuenta.
+ * @author Sus nombres
+ * @author Sus nombres
+ * @author Sus nombres
+ * @version 1.0;
+ */
 public interface Cuenta {
+    //Atributos y métodos que heredarán las clases Nómina, Cédito y Débito
     public String toString();
     public String getNombreCliente();
     public int getNumeroCliente();
