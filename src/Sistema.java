@@ -29,7 +29,7 @@ public class Sistema {
     FileOutputStream paraEjecutivos;
     PrintStream writerClientes;
     PrintStream writerEjecutivos;
-
+    String fechaDelSistema;
 
     public Sistema() {
         
@@ -37,14 +37,16 @@ public class Sistema {
 
     public void inciaPrograma() {
         try {
-            FileReader lecturaCuetas = new FileReader(client);
-            FileReader lecturaEjecutivos = new FileReader(eje);
-            BufferedReader lineasCuenta = new BufferedReader(new InputStreamReader(System.in));
-            BufferedReader lineasEjecutivo = new BufferedReader(new InputStreamReader(System.in));
+            BufferedReader lineasCuenta = new BufferedReader(new FileReader(client));
+            BufferedReader lineasEjecutivo = new BufferedReader(new FileReader(eje));
             String cuenta;
+            System.out.println("buscando datos");
             while ((cuenta = lineasCuenta.readLine()) != null) {
+                System.out.println(cuenta);
                 String[] datos = cuenta.split(",");
+                System.out.println(datos.toString());
                 if (datos.length == 10) {
+                    System.out.println("leyendo debito");
                     String nombre = datos[0];
                     int numeroCliente = Integer.parseInt(datos[1]);
                     int numeroCuenta = Integer.parseInt(datos[2]);
@@ -63,6 +65,7 @@ public class Sistema {
                     cuentas.add(new Debito(nombre, numeroCliente, numeroCuenta, saldo, fechaApertura, fechaCorte, estado, numeroSucursal, correo, telefono));
                 } else if (datos.length == 13) {
                     if (datos[0].equals("credito")) {
+                        System.out.println("leyendo credito");
                         String nombre = datos[1];
                         int numeroCliente = Integer.parseInt(datos[2]);
                         int numeroTarjeta = Integer.parseInt(datos[3]);
@@ -82,6 +85,7 @@ public class Sistema {
                         }
                         cuentas.add(new Credito(nombre, numeroCliente, numeroTarjeta, importeCredito, montoCredito, fechaApertura, fechaPago, fechaVencimiento, numeroSucursal, correo, telefono, estado));
                     } else {
+                        System.out.println("leyendo nomina");
                         String nombre = datos[1];
                         int numeroCliente = Integer.parseInt(datos[2]);
                         int numeroCuenta = Integer.parseInt(datos[3]);
@@ -105,7 +109,9 @@ public class Sistema {
             }
             String ejecutivo;
             while ((ejecutivo = lineasEjecutivo.readLine()) != null) {
+                System.out.println("leyendo ejecutivo");
                 String[] datos = ejecutivo.split(",");
+                System.out.println(datos.toString());
                 if (datos.length == 10) {
                     String nombre = datos[0];
                     int numeroCliente = Integer.parseInt(datos[1]);
@@ -291,7 +297,7 @@ public class Sistema {
         return total;
     }
 
-    public void generaReporteDiario() {
+    public void generaReporteDiario() throws FileNotFoundException {
         double saldoPromedio = getSaldoPromedio();
         double creditoPromedio = getCreditoPromedio();
         double saldoMenor = getSaldoMenor();
@@ -303,6 +309,13 @@ public class Sistema {
         int cuentasNomina = getNomina();
         String reporte = String.format("Saldo promedio: %f\nCredito promedo: %f\nSaldo menor: %f\n Deudo menor: %f\n Saldo mayor: %f\n Deuda mayor: %f\nNumero de cuentas de debito: %d\n NUmero de cuentas de credito: %d\n Numero de cuentas de nommina: %d", saldoPromedio, creditoPromedio, saldoMenor, deudaMenor, saldoMayor, deudaMayor, cuentasDebito, cuentasCredito, cuentasNomina);
         System.out.println(reporte);
+        String file = "cuentasAperturas" + this.fechaDelSistema;
+        FileOutputStream aperturas = new FileOutputStream(file);
+        PrintStream generaReporte = new PrintStream(aperturas);
+        for (String contrato : this.cuentasApertura) {
+            generaReporte.println(contrato);
+        }
+        generaReporte.close();
     }
 
     public LinkedList<Cuenta> busquedaPorEstado(String dato) {
@@ -435,9 +448,9 @@ public class Sistema {
         System.out.println("1) Consulta");
         System.out.println("2) Dar de alta una cuenta");
         System.out.println("3) Actualizar datos de cuenta");
-        System.out.println("4) Registrar una nueva apertura de cuenta");
-        System.out.println("5) Dar de alta un nuevo empleado");
-        System.out.println("6) Actualizar datos de empleado");
+        System.out.println("4) Registrar un deposito");
+        System.out.println("5) Realizar un retiro");
+        System.out.println("6) Realizar pago de tarjeta de credito");
         System.out.println("7) Salir");
     }
 
@@ -940,7 +953,7 @@ public class Sistema {
         System.out.println("\nEjecutivos:\n" + this.ejecutivos.toString());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         Sistema si = new Sistema();
         int opcion;
         int subOpcion;
@@ -1067,7 +1080,6 @@ public class Sistema {
                 } else {
                     System.out.println("Ingrese la cantidad de pago");
                     double pago = sc.nextDouble();
-
                 }
                 break;
             default:
@@ -1095,7 +1107,7 @@ public class Sistema {
                 } else {
                     linea = cliente.paraAlmacenar();
                 }
-                writerClientes.println(linea+"\n");
+                writerClientes.println(linea);
             }   
 
             linea = "";
